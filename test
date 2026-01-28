@@ -1,0 +1,22 @@
+from playwright.sync_api import sync_playwright
+
+def scrape_google(query):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+
+        query="\"Ausschreibung\" \"SAP\""
+        
+        # Navigate to Google
+        page.goto(f"https://www.google.com/search?q={query}")
+        
+        # Wait for results to load
+        page.wait_for_selector('[data-ved]')
+        
+        # Extract search results
+        results = page.query_selector_all('h3')
+        
+        for result in results:
+            print(result.inner_text())
+        
+        browser.close()
